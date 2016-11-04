@@ -7,7 +7,7 @@ CREATE TABLE cruise (
   start_date date,
   end_date date,
   KEY (cruise_name)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS cruise_core_ctd;
 CREATE TABLE cruise_core_ctd (
@@ -17,14 +17,15 @@ CREATE TABLE cruise_core_ctd (
   ctd_value float NOT NULL,
   FOREIGN KEY (cruise_id) REFERENCES cruise (cruise_id) ON DELETE CASCADE,
   FOREIGN KEY (ctd_type_id) REFERENCES ctd_type (ctd_type_id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS ctd_type;
 CREATE TABLE ctd_type (
   ctd_type_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   ctd_type varchar(100),
+  unit varchar(20),
   KEY (ctd_type)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS investigator;
 CREATE TABLE investigator (
@@ -32,7 +33,7 @@ CREATE TABLE investigator (
   investigator_name varchar(50) DEFAULT NULL,
   institution varchar(255) DEFAULT NULL,
   KEY (investigator_name)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS station;
 CREATE TABLE station (
@@ -43,25 +44,65 @@ CREATE TABLE station (
   longitude float,
   UNIQUE (cruise_id, station_number),
   FOREIGN KEY (cruise_id) REFERENCES cruise (cruise_id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS cast;
 CREATE TABLE cast (
   cast_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   station_id int unsigned,
   cast_number int unsigned,
+  collection_date date,
+  collection_time time,
   FOREIGN KEY (station_id) REFERENCES station (station_id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS filter_type;
+CREATE TABLE filter_type (
+  filter_type_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  filter_type varchar(50) DEFAULT '',
+  UNIQUE (filter_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS sample_type;
+CREATE TABLE sample_type (
+  sample_type_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  sample_type varchar(50) DEFAULT '',
+  UNIQUE (sample_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS sequencing_method;
+CREATE TABLE sequencing_method (
+  sequencing_method_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  sequencing_method varchar(50) DEFAULT '',
+  UNIQUE (sequencing_method)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS library_kit;
+CREATE TABLE library_kit (
+  library_kit_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  library_kit varchar(50) DEFAULT '',
+  UNIQUE (library_kit)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS sample;
 CREATE TABLE sample (
   sample_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   cast_id int unsigned,
   investigator_id int unsigned,
+  filter_type_id int unsigned,
+  sample_type_id int unsigned,
+  sequencing_method_id int unsigned,
+  library_kit_id int unsigned,
   sample_name varchar(255) DEFAULT NULL,
-  rosette_position int unsigned,
+  seq_name varchar(255) DEFAULT NULL,
+  depth int unsigned,
+  filter_min float,
   KEY (sample_name),
   FOREIGN KEY (cast_id) REFERENCES cast (cast_id) ON DELETE CASCADE,
+  FOREIGN KEY (filter_type_id) REFERENCES filter_type (filter_type_id) ON DELETE CASCADE,
+  FOREIGN KEY (sample_type_id) REFERENCES sample_type (sample_type_id) ON DELETE CASCADE,
+  FOREIGN KEY (sequencing_method_id) REFERENCES sequencing_method (sequencing_method_id) ON DELETE CASCADE,
+  FOREIGN KEY (library_kit_id) REFERENCES library_kit (library_kit_id) ON DELETE CASCADE,
   FOREIGN KEY (investigator_id) REFERENCES investigator (investigator_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -73,4 +114,4 @@ CREATE TABLE sample_ctd (
   ctd_value float NOT NULL,
   FOREIGN KEY (sample_id) REFERENCES sample (sample_id) ON DELETE CASCADE,
   FOREIGN KEY (ctd_type_id) REFERENCES ctd_type (ctd_type_id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

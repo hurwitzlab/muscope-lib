@@ -9,11 +9,11 @@ use FindBin '$Bin';
 use File::Path 'mkpath';
 use File::Spec::Functions 'canonpath';
 use Getopt::Long;
-use Compass::DB;
+use MuScope::DB;
 use Pod::Usage;
 use Readonly;
 
-my $out_dir = canonpath("$Bin/../lib");
+my $out_dir = '/usr/local/muscope/lib';
 my $debug   = 0;
 my ( $help, $man_page );
 GetOptions(
