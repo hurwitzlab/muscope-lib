@@ -96,7 +96,7 @@ CREATE TABLE sample (
   sample_name varchar(255) DEFAULT NULL,
   seq_name varchar(255) DEFAULT NULL,
   depth int unsigned,
-  filter_min float,
+  filter_min decimal(10,4),
   KEY (sample_name),
   FOREIGN KEY (cast_id) REFERENCES cast (cast_id) ON DELETE CASCADE,
   FOREIGN KEY (filter_type_id) REFERENCES filter_type (filter_type_id) ON DELETE CASCADE,
@@ -111,7 +111,27 @@ CREATE TABLE sample_ctd (
   sample_ctd_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   sample_id int unsigned,
   ctd_type_id int unsigned,
-  ctd_value float NOT NULL,
+  ctd_value decimal(10,4) NOT NULL,
   FOREIGN KEY (sample_id) REFERENCES sample (sample_id) ON DELETE CASCADE,
   FOREIGN KEY (ctd_type_id) REFERENCES ctd_type (ctd_type_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE search (
+  search_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  table_name varchar(100) DEFAULT NULL,
+  primary_key int unsigned DEFAULT NULL,
+  search_text longtext,
+  FULLTEXT KEY search_text (search_text)
+) ENGINE=MyISAM;
+
+CREATE TABLE query_log (
+  query_log_id int unsigned NOT NULL AUTO_INCREMENT,
+  num_found int unsigned DEFAULT NULL,
+  query text,
+  params text,
+  ip text,
+  user_id text,
+  time double DEFAULT NULL,
+  date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (query_log_id)
+) ENGINE=MyISAM;
