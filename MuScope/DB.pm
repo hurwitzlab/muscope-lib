@@ -69,6 +69,11 @@ has user => (
     predicate  => 'has_user',
 );
 
+has mongo => (
+    is         => 'rw',
+    lazy_build => 1,
+);
+
 # ----------------------------------------------------------------
 sub BUILD {
     my $self    = shift;
@@ -130,6 +135,19 @@ sub _build_dbh {
     else {
         return $dbh;
     }
+}
+
+# ----------------------------------------------------------------
+sub _build_mongo {
+    my $self       = shift;
+    my $config     = $self->config;
+    my $mongo_conf = $config->get('mongo');
+    my $mongo      = MongoDB::MongoClient->new(
+        host => $mongo_conf->{'host'} || 'localhost', 
+        port => $mongo_conf->{'port'} || 27017
+    );
+
+    return $mongo;
 }
 
 # ----------------------------------------------------------------
