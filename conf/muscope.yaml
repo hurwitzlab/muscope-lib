@@ -3,3 +3,8 @@ db:
   user: "imicrobe"
   password: "XgDeeWTAw4pI."
   driver: "mysql"
+
+mongo:
+  host: "lipothrix.hpc.arizona.edu"
+  port: "27017"
+  dbname: "muscope"
