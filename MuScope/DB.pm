@@ -4,6 +4,7 @@ use MuScope::Config;
 use MuScope::Schema;
 use DBI;
 use Moose;
+use MongoDB;
 use Data::Dump 'dump';
 
 has config     => (

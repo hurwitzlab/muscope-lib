@@ -23,11 +23,75 @@ Readonly my %INDEX_FLDS = (
 
 Readonly my %MONGO_SQL => {
     sample => [
-        q'select "specimen__sample_id" as name, sample_id as value
+        q'select "Specimen__station" as name, station_number as value
+          from   station st, cast c, sample s
+          where  s.sample_id=?
+          and    s.cast_id=c.cast_id
+          and    c.station_id=st.station_id
+        ',
+        q'select "Specimen__sample_id" as name, sample_id as value
           from   sample
           where  sample_id=?
         ',
-        q'select t.ctd_type as name, s.ctd_value as value
+        q'select "Specimen__sample_name" as name, sample_name as value
+          from   sample
+          where  sample_id=?
+        ',
+        q'select "Specimen__cruise_name" as name, cr.cruise_name as value
+          from   sample sa, cast ca, station st, cruise cr
+          where  sa.sample_id=?
+          and    sa.cast_id=ca.cast_id
+          and    ca.station_id=st.station_id
+          and    st.cruise_id=cr.cruise_id
+        ',
+        q'select "Specimen__cruise_id" as name, st.cruise_id as value
+          from   sample sa, cast ca, station st
+          where  sa.sample_id=?
+          and    sa.cast_id=ca.cast_id
+          and    ca.station_id=st.station_id
+        ',
+        q'select "Specimen__filter_min" as name, filter_min as value
+          from   sample
+          where  sample_id=?
+        ',
+        q'select "Specimen__depth" as name, depth as value
+          from   sample
+          where  sample_id=?
+        ',
+        q'select "Specimen__library_kit" as name, l.library_kit as value
+          from   sample s, library_kit l
+          where  s.sample_id=?
+          and    s.library_kit_id=l.library_kit_id
+        ',
+        q'select "Specimen__sequencing_method" as name, 
+                 m.sequencing_method as value
+          from   sample s, sequencing_method m
+          where  s.sample_id=?
+          and    s.sequencing_method_id=m.sequencing_method_id
+        ',
+        q'select "Specimen__filter_type" as name, f.filter_type as value
+          from   sample s, filter_type f
+          where  s.sample_id=?
+          and    s.filter_type_id=f.filter_type_id
+        ',
+        q'select "Specimen__investigator" as name, i.investigator_name as value
+          from   sample s, investigator i
+          where  s.sample_id=?
+          and    s.investigator_id=i.investigator_id
+        ',
+        q'select "Location__latitude" as name, st.latitude as value
+          from   sample sa, cast ca, station st
+          where  sa.sample_id=?
+          and    sa.cast_id=ca.cast_id
+          and    ca.station_id=st.station_id
+        ',
+        q'select "Location__longitude" as name, st.longitude as value
+          from   sample sa, cast ca, station st
+          where  sa.sample_id=?
+          and    sa.cast_id=ca.cast_id
+          and    ca.station_id=st.station_id
+        ',
+        q'select concat("CTD__", t.ctd_type) as name, s.ctd_value as value
           from   sample_ctd s, ctd_type t
           where  s.sample_id=?
           and    s.ctd_type_id=t.ctd_type_id
@@ -194,7 +258,7 @@ sub lean_hash {
 # --------------------------------------------------
 sub normalize {
     my $s   = shift or return;
-    my $ret = lc trim($s);
+    my $ret = trim($s);
     $ret    =~ s/[\s,-]+/_/g;
     $ret    =~ s/_parameter//;
     $ret    =~ s/[^\w:_]//g;

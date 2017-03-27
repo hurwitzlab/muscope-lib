@@ -136,18 +136,7 @@ sub investigators {
 
 sub num_samples {
     my $self = shift;
-    my $dbh  = $self->result_source->storage->dbh;
-    return $dbh->selectrow_array(
-        q[
-            select count(s.sample_id)
-            from   sample s, cast c, station st
-            where  st.cruise_id=?
-            and    st.station_id=c.station_id
-            and    c.cast_id=s.cast_id
-        ],
-        { Columns => {} },
-        $self->id
-    );
+    return scalar $self->samples;
 }
 
 sub samples {

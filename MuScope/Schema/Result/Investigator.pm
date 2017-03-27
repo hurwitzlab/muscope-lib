@@ -45,6 +45,22 @@ __PACKAGE__->table("investigator");
   is_nullable: 1
   size: 255
 
+=head2 website
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 project
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 bio
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -59,6 +75,12 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "institution",
   { data_type => "varchar", is_nullable => 1, size => 255 },
+  "website",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "project",
+  { data_type => "text", is_nullable => 1 },
+  "bio",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -91,10 +113,32 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-11-02 10:50:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:b3hvTxaRst4XPW1mWe4PLw
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-12-06 06:35:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:e2R7hY9NCIkBKQ648ixmgQ
 
+sub cruises {
+    my $self = shift;
+    my $dbh  = $self->result_source->storage->dbh;
+    my $ids  = $dbh->selectcol_arrayref(
+        q[
+            select distinct st.cruise_id
+            from   sample s, cast c, station st
+            where  s.investigator_id=?
+            and    s.cast_id=c.cast_id
+            and    c.station_id=st.station_id
+        ],
+        {},
+        $self->id
+    );
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+    my $schema  = $self->result_source->storage->schema;
+    return map { $schema->resultset('Cruise')->find($_) } @$ids;
+}
+
+sub num_cruises {
+    my $self    = shift;
+    return scalar $self->cruises;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

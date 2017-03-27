@@ -270,6 +270,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 sample_files
+
+Type: has_many
+
+Related object: L<MuScope::Schema::Result::SampleFile>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sample_files",
+  "MuScope::Schema::Result::SampleFile",
+  { "foreign.sample_id" => "self.sample_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 sample_type
 
 Type: belongs_to
@@ -311,10 +326,31 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-11-09 14:55:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JnUj+bIrgISgvBbUtAo4jA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-03-07 15:29:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EjpkTlhwo0TTOOly7e5s0Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub cruise {
+    my $self = shift;
+    my $dbh  = $self->result_source->storage->dbh;
+    my ($cruise_id) = $dbh->selectrow_array(
+        q[
+            select st.cruise_id
+            from   sample s, cast c, station st
+            where  s.sample_id=?
+            and    s.cast_id=c.cast_id
+            and    c.station_id=st.station_id
+        ],
+        {},
+        ($self->id)
+    );
+
+    my $schema  = $self->result_source->storage->schema;
+    return $schema->resultset('Cruise')->find($cruise_id);
+}
+
 __PACKAGE__->meta->make_immutable;
+
 1;
