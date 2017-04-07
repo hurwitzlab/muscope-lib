@@ -33,7 +33,13 @@ __PACKAGE__->table("investigator");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 investigator_name
+=head2 first_name
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 last_name
 
   data_type: 'varchar'
   is_nullable: 1
@@ -71,7 +77,9 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
-  "investigator_name",
+  "first_name",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "last_name",
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "institution",
   { data_type => "varchar", is_nullable => 1, size => 255 },
@@ -95,6 +103,22 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("investigator_id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<first_name>
+
+=over 4
+
+=item * L</first_name>
+
+=item * L</last_name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("first_name", ["first_name", "last_name"]);
+
 =head1 RELATIONS
 
 =head2 samples
@@ -113,8 +137,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-12-06 06:35:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:e2R7hY9NCIkBKQ648ixmgQ
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-06 13:48:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dqLquh+pGucDmPZaSkAB3w
 
 sub cruises {
     my $self = shift;

@@ -87,17 +87,11 @@ __PACKAGE__->table("sample");
   is_nullable: 1
   size: 255
 
-=head2 depth
+=head2 sequence_type
 
-  data_type: 'integer'
-  extra: {unsigned => 1}
+  data_type: 'varchar'
   is_nullable: 1
-
-=head2 filter_min
-
-  data_type: 'decimal'
-  is_nullable: 1
-  size: [10,4]
+  size: 50
 
 =cut
 
@@ -155,10 +149,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "seq_name",
   { data_type => "varchar", is_nullable => 1, size => 255 },
-  "depth",
-  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
-  "filter_min",
-  { data_type => "decimal", is_nullable => 1, size => [10, 4] },
+  "sequence_type",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
 );
 
 =head1 PRIMARY KEY
@@ -172,6 +164,22 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("sample_id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<cast_id>
+
+=over 4
+
+=item * L</cast_id>
+
+=item * L</sample_name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("cast_id", ["cast_id", "sample_name"]);
 
 =head1 RELATIONS
 
@@ -255,6 +263,21 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 sample_attrs
+
+Type: has_many
+
+Related object: L<MuScope::Schema::Result::SampleAttr>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sample_attrs",
+  "MuScope::Schema::Result::SampleAttr",
+  { "foreign.sample_id" => "self.sample_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 sample_ctds
 
 Type: has_many
@@ -326,8 +349,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-03-07 15:29:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EjpkTlhwo0TTOOly7e5s0Q
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-06 13:48:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OO1MhRxpGnEBpuxn/8+iMg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
