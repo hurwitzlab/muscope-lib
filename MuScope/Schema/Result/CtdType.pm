@@ -90,24 +90,9 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 sample_ctds
 
-Type: has_many
-
-Related object: L<MuScope::Schema::Result::SampleCtd>
-
-=cut
-
-__PACKAGE__->has_many(
-  "sample_ctds",
-  "MuScope::Schema::Result::SampleCtd",
-  { "foreign.ctd_type_id" => "self.ctd_type_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-11-02 12:23:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+nesdL5cq86NWRoSJkS9mA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-07 09:32:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DeZKplB31SAk23xYtHIjyg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

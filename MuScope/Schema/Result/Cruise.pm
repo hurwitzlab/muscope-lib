@@ -175,7 +175,7 @@ sub num_casts {
 sub casts {
     my $self   = shift;
     my $schema = $self->result_source->storage->schema;
-    return map { $schema->resultset('Sample')->find($_) } $self->cast_ids;
+    return map { $schema->resultset('Cast')->find($_) } $self->cast_ids;
 }
 
 # --------------------------------------------------

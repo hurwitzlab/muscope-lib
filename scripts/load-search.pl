@@ -16,7 +16,7 @@ use Readonly;
 use String::Trim qw(trim);
 
 Readonly my %INDEX_FLDS = (
-    investigator => [qw(investigator_name institution)],
+    investigator => [qw(first_name last_name institution)],
     cruise       => [qw(cruise_name)],
     sample       => [qw(sample_name seq_name)],
 );
@@ -50,10 +50,6 @@ Readonly my %MONGO_SQL => {
           and    sa.cast_id=ca.cast_id
           and    ca.station_id=st.station_id
         ',
-        q'select "Sample__filter_min" as name, filter_min as value
-          from   sample
-          where  sample_id=?
-        ',
         q'select "Sample__library_kit" as name, l.library_kit as value
           from   sample s, library_kit l
           where  s.sample_id=?
@@ -65,17 +61,19 @@ Readonly my %MONGO_SQL => {
           where  s.sample_id=?
           and    s.sequencing_method_id=m.sequencing_method_id
         ',
-        q'select "Sample__sequence_type" as name, 
-                 sequence_type as value
-          from   sample s
-          where  sample_id=?
+        q'select "Sample__sample_type" as name, 
+                 t.sample_type as value
+          from   sample s, sample_type t
+          where  s.sample_id=?
+          and    s.sample_type_id=t.sample_type_id
         ',
         q'select "Sample__filter_type" as name, f.filter_type as value
           from   sample s, filter_type f
           where  s.sample_id=?
           and    s.filter_type_id=f.filter_type_id
         ',
-        q'select "Sample__investigator" as name, i.investigator_name as value
+        q'select "Sample__investigator" as name, 
+                 concat_ws(" ", i.first_name, i.last_name) as value
           from   sample s, investigator i
           where  s.sample_id=?
           and    s.investigator_id=i.investigator_id

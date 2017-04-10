@@ -87,12 +87,6 @@ __PACKAGE__->table("sample");
   is_nullable: 1
   size: 255
 
-=head2 sequence_type
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 50
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -149,8 +143,6 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "seq_name",
   { data_type => "varchar", is_nullable => 1, size => 255 },
-  "sequence_type",
-  { data_type => "varchar", is_nullable => 1, size => 50 },
 );
 
 =head1 PRIMARY KEY
@@ -278,21 +270,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 sample_ctds
-
-Type: has_many
-
-Related object: L<MuScope::Schema::Result::SampleCtd>
-
-=cut
-
-__PACKAGE__->has_many(
-  "sample_ctds",
-  "MuScope::Schema::Result::SampleCtd",
-  { "foreign.sample_id" => "self.sample_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 sample_files
 
 Type: has_many
@@ -349,8 +326,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-06 13:48:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OO1MhRxpGnEBpuxn/8+iMg
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-07 09:32:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GgmqhBCah7bfFhXLStwilA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

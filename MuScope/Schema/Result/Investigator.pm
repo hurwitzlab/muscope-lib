@@ -140,10 +140,11 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-06 13:48:57
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dqLquh+pGucDmPZaSkAB3w
 
-sub cruises {
+# --------------------------------------------------
+sub cruise_ids {
     my $self = shift;
     my $dbh  = $self->result_source->storage->dbh;
-    my $ids  = $dbh->selectcol_arrayref(
+    return @{ $dbh->selectcol_arrayref(
         q[
             select distinct st.cruise_id
             from   sample s, cast c, station st
@@ -153,15 +154,20 @@ sub cruises {
         ],
         {},
         $self->id
-    );
-
-    my $schema  = $self->result_source->storage->schema;
-    return map { $schema->resultset('Cruise')->find($_) } @$ids;
+    ) };
 }
 
+# --------------------------------------------------
+sub cruises {
+    my $self   = shift;
+    my $schema = $self->result_source->storage->schema;
+    return map { $schema->resultset('Cruise')->find($_) } $self->cruise_ids;
+}
+
+# --------------------------------------------------
 sub num_cruises {
-    my $self    = shift;
-    return scalar $self->cruises;
+    my $self = shift;
+    return scalar $self->cruise_ids;
 }
 
 __PACKAGE__->meta->make_immutable;
