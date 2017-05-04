@@ -43,37 +43,42 @@ __PACKAGE__->table("sample");
 =head2 investigator_id
 
   data_type: 'integer'
+  default_value: 1
   extra: {unsigned => 1}
   is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 filter_type_id
 
   data_type: 'integer'
+  default_value: 1
   extra: {unsigned => 1}
   is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 sample_type_id
 
   data_type: 'integer'
+  default_value: 1
   extra: {unsigned => 1}
   is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 sequencing_method_id
 
   data_type: 'integer'
+  default_value: 1
   extra: {unsigned => 1}
   is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 library_kit_id
 
   data_type: 'integer'
+  default_value: 1
   extra: {unsigned => 1}
   is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 sample_name
 
@@ -107,37 +112,42 @@ __PACKAGE__->add_columns(
   "investigator_id",
   {
     data_type => "integer",
+    default_value => 1,
     extra => { unsigned => 1 },
     is_foreign_key => 1,
-    is_nullable => 1,
+    is_nullable => 0,
   },
   "filter_type_id",
   {
     data_type => "integer",
+    default_value => 1,
     extra => { unsigned => 1 },
     is_foreign_key => 1,
-    is_nullable => 1,
+    is_nullable => 0,
   },
   "sample_type_id",
   {
     data_type => "integer",
+    default_value => 1,
     extra => { unsigned => 1 },
     is_foreign_key => 1,
-    is_nullable => 1,
+    is_nullable => 0,
   },
   "sequencing_method_id",
   {
     data_type => "integer",
+    default_value => 1,
     extra => { unsigned => 1 },
     is_foreign_key => 1,
-    is_nullable => 1,
+    is_nullable => 0,
   },
   "library_kit_id",
   {
     data_type => "integer",
+    default_value => 1,
     extra => { unsigned => 1 },
     is_foreign_key => 1,
-    is_nullable => 1,
+    is_nullable => 0,
   },
   "sample_name",
   { data_type => "varchar", is_nullable => 1, size => 255 },
@@ -207,12 +217,7 @@ __PACKAGE__->belongs_to(
   "filter_type",
   "MuScope::Schema::Result::FilterType",
   { filter_type_id => "filter_type_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "RESTRICT",
-  },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 =head2 investigator
@@ -227,12 +232,7 @@ __PACKAGE__->belongs_to(
   "investigator",
   "MuScope::Schema::Result::Investigator",
   { investigator_id => "investigator_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "RESTRICT",
-  },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 =head2 library_kit
@@ -247,12 +247,7 @@ __PACKAGE__->belongs_to(
   "library_kit",
   "MuScope::Schema::Result::LibraryKit",
   { library_kit_id => "library_kit_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "RESTRICT",
-  },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 =head2 sample_attrs
@@ -297,12 +292,7 @@ __PACKAGE__->belongs_to(
   "sample_type",
   "MuScope::Schema::Result::SampleType",
   { sample_type_id => "sample_type_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "RESTRICT",
-  },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 =head2 sequencing_method
@@ -317,17 +307,12 @@ __PACKAGE__->belongs_to(
   "sequencing_method",
   "MuScope::Schema::Result::SequencingMethod",
   { sequencing_method_id => "sequencing_method_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "RESTRICT",
-  },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-07 09:32:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GgmqhBCah7bfFhXLStwilA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-25 09:56:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:txHIxFhWM20CkOf2Cl7RZA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

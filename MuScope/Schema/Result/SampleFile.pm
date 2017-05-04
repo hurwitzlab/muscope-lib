@@ -154,7 +154,7 @@ __PACKAGE__->belongs_to(
   "sample",
   "MuScope::Schema::Result::Sample",
   { sample_id => "sample_id" },
-  { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 =head2 sample_file_type
@@ -169,12 +169,12 @@ __PACKAGE__->belongs_to(
   "sample_file_type",
   "MuScope::Schema::Result::SampleFileType",
   { sample_file_type_id => "sample_file_type_id" },
-  { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-03-07 15:29:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EKHkiR3W6egmnnSGQnA55w
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-25 09:56:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CVjkrBIHgmmh3QN9bAjibw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

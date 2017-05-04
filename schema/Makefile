@@ -1,18 +1,21 @@
 db: recreate ctd_type investigator
 
-recreate: drop create schema
+# recreate: drop create schema
+# 
+# drop:
+# 	mysqladmin drop -f muscope 
+# 
+# create:
+# 	mysqladmin create muscope
+# 
+# schema:
+# 	mysql muscope < create.sql
 
-drop:
-	mysqladmin drop -f muscope 
-
-create:
-	mysqladmin create muscope
-
-schema:
-	mysql muscope < create.sql
+dump:
+	mysqldump --no-data muscope > mysql.sql
 
 image:
-	sqlt-graph --color -o muscope.png -f MySQL create.sql
+	sqlt-graph --color -o muscope.png -f MySQL mysql.sql
 
 ctd_type:
 	mysqlimport --delete --local -c ctd_type,unit muscope ctd_type.txt

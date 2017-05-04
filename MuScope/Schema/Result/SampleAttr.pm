@@ -140,12 +140,12 @@ __PACKAGE__->belongs_to(
   "sample_attr_type",
   "MuScope::Schema::Result::SampleAttrType",
   { sample_attr_type_id => "sample_attr_type_id" },
-  { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-03 09:53:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qEdj+DMUF8tqqFTjlqJH4Q
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-25 09:56:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7fsOxmlFiiOUsLahLIhSWA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

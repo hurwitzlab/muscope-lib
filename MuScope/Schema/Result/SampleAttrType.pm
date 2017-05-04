@@ -148,7 +148,7 @@ __PACKAGE__->belongs_to(
   {
     is_deferrable => 1,
     join_type     => "LEFT",
-    on_delete     => "RESTRICT",
+    on_delete     => "CASCADE",
     on_update     => "RESTRICT",
   },
 );
@@ -169,8 +169,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-03 10:00:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ax+4TShL0uL5QkGbfSRiRA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-25 09:56:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:D8rdNw0LJr8PcFcQXFYbpQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
