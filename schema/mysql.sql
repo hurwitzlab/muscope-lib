@@ -26,6 +26,7 @@ CREATE TABLE `app` (
   `app_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `app_name` varchar(50) NOT NULL,
   `is_active` tinyint(4) DEFAULT '1',
+  `protocol` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`app_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -48,7 +49,7 @@ CREATE TABLE `app_run` (
   KEY `app_id` (`app_id`),
   CONSTRAINT `app_run_ibfk_1` FOREIGN KEY (`app_id`) REFERENCES `app` (`app_id`),
   CONSTRAINT `app_run_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,21 +127,6 @@ CREATE TABLE `ctd_type` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `filter_type`
---
-
-DROP TABLE IF EXISTS `filter_type`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `filter_type` (
-  `filter_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `filter_type` varchar(50) DEFAULT '',
-  PRIMARY KEY (`filter_type_id`),
-  UNIQUE KEY `filter_type` (`filter_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `investigator`
 --
 
@@ -161,21 +147,6 @@ CREATE TABLE `investigator` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `library_kit`
---
-
-DROP TABLE IF EXISTS `library_kit`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `library_kit` (
-  `library_kit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `library_kit` varchar(50) DEFAULT '',
-  PRIMARY KEY (`library_kit_id`),
-  UNIQUE KEY `library_kit` (`library_kit`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `login`
 --
 
@@ -189,7 +160,7 @@ CREATE TABLE `login` (
   PRIMARY KEY (`login_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `login_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,7 +180,7 @@ CREATE TABLE `query_log` (
   `time` double DEFAULT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`query_log_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=87 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=97 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -223,25 +194,13 @@ CREATE TABLE `sample` (
   `sample_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `cast_id` int(10) unsigned DEFAULT NULL,
   `investigator_id` int(10) unsigned NOT NULL DEFAULT '1',
-  `filter_type_id` int(10) unsigned NOT NULL DEFAULT '1',
-  `sample_type_id` int(10) unsigned NOT NULL DEFAULT '1',
-  `sequencing_method_id` int(10) unsigned NOT NULL DEFAULT '1',
-  `library_kit_id` int(10) unsigned NOT NULL DEFAULT '1',
   `sample_name` varchar(255) DEFAULT NULL,
   `seq_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`sample_id`),
   UNIQUE KEY `cast_id` (`cast_id`,`sample_name`),
   KEY `sample_name` (`sample_name`),
-  KEY `filter_type_id` (`filter_type_id`),
-  KEY `sample_type_id` (`sample_type_id`),
-  KEY `sequencing_method_id` (`sequencing_method_id`),
-  KEY `library_kit_id` (`library_kit_id`),
   KEY `investigator_id` (`investigator_id`),
   CONSTRAINT `sample_ibfk_1` FOREIGN KEY (`cast_id`) REFERENCES `cast` (`cast_id`) ON DELETE CASCADE,
-  CONSTRAINT `sample_ibfk_2` FOREIGN KEY (`filter_type_id`) REFERENCES `filter_type` (`filter_type_id`) ON DELETE CASCADE,
-  CONSTRAINT `sample_ibfk_3` FOREIGN KEY (`sample_type_id`) REFERENCES `sample_type` (`sample_type_id`) ON DELETE CASCADE,
-  CONSTRAINT `sample_ibfk_4` FOREIGN KEY (`sequencing_method_id`) REFERENCES `sequencing_method` (`sequencing_method_id`) ON DELETE CASCADE,
-  CONSTRAINT `sample_ibfk_5` FOREIGN KEY (`library_kit_id`) REFERENCES `library_kit` (`library_kit_id`) ON DELETE CASCADE,
   CONSTRAINT `sample_ibfk_6` FOREIGN KEY (`investigator_id`) REFERENCES `investigator` (`investigator_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=591 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -263,7 +222,7 @@ CREATE TABLE `sample_attr` (
   KEY `sample_attr_type_id` (`sample_attr_type_id`),
   CONSTRAINT `sample_attr_ibfk_2` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`sample_id`) ON DELETE CASCADE,
   CONSTRAINT `sample_attr_ibfk_3` FOREIGN KEY (`sample_attr_type_id`) REFERENCES `sample_attr_type` (`sample_attr_type_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7409 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9759 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -284,7 +243,7 @@ CREATE TABLE `sample_attr_type` (
   UNIQUE KEY `type` (`type`),
   KEY `sample_attr_type_category_id` (`sample_attr_type_category_id`),
   CONSTRAINT `sample_attr_type_ibfk_1` FOREIGN KEY (`sample_attr_type_category_id`) REFERENCES `sample_attr_type_category` (`sample_attr_type_category_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -329,7 +288,7 @@ DROP TABLE IF EXISTS `sample_file`;
 CREATE TABLE `sample_file` (
   `sample_file_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sample_id` int(10) unsigned NOT NULL,
-  `sample_file_type_id` int(10) unsigned NOT NULL,
+  `sample_file_type_id` int(10) unsigned NOT NULL DEFAULT '1',
   `file` varchar(200) DEFAULT NULL,
   `num_seqs` int(11) DEFAULT NULL,
   `num_bp` bigint(20) unsigned DEFAULT NULL,
@@ -341,7 +300,7 @@ CREATE TABLE `sample_file` (
   KEY `sample_file_type_id` (`sample_file_type_id`),
   CONSTRAINT `sample_file_ibfk_4` FOREIGN KEY (`sample_file_type_id`) REFERENCES `sample_file_type` (`sample_file_type_id`) ON DELETE CASCADE,
   CONSTRAINT `sample_file_ibfk_5` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`sample_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1790 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -356,22 +315,7 @@ CREATE TABLE `sample_file_type` (
   `type` varchar(255) NOT NULL,
   PRIMARY KEY (`sample_file_type_id`),
   UNIQUE KEY `type` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `sample_type`
---
-
-DROP TABLE IF EXISTS `sample_type`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sample_type` (
-  `sample_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sample_type` varchar(50) DEFAULT '',
-  PRIMARY KEY (`sample_type_id`),
-  UNIQUE KEY `sample_type` (`sample_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -388,22 +332,7 @@ CREATE TABLE `search` (
   `search_text` longtext,
   PRIMARY KEY (`search_id`),
   FULLTEXT KEY `search_text` (`search_text`)
-) ENGINE=MyISAM AUTO_INCREMENT=6024 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `sequencing_method`
---
-
-DROP TABLE IF EXISTS `sequencing_method`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sequencing_method` (
-  `sequencing_method_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sequencing_method` varchar(50) DEFAULT '',
-  PRIMARY KEY (`sequencing_method_id`),
-  UNIQUE KEY `sequencing_method` (`sequencing_method`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7270 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -449,4 +378,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-04 15:58:05
+-- Dump completed on 2017-05-11  9:43:08

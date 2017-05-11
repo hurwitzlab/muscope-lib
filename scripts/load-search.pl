@@ -23,113 +23,100 @@ Readonly my %INDEX_FLDS = (
 
 Readonly my %MONGO_SQL => {
     sample => [
-        q'select "Sample__station" as name, station_number as value
+        q'select "station_number" as name, station_number as value
           from   station st, cast c, sample s
           where  s.sample_id=?
           and    s.cast_id=c.cast_id
           and    c.station_id=st.station_id
         ',
-        q'select "Sample__sample_id" as name, sample_id as value
+        q'select "sample_id" as name, sample_id as value
           from   sample
           where  sample_id=?
         ',
-        q'select "Sample__sample_name" as name, sample_name as value
+        q'select "sample_name" as name, sample_name as value
           from   sample
           where  sample_id=?
         ',
-        q'select "Sample__cruise_name" as name, cr.cruise_name as value
+        q'select "cruise_name" as name, cr.cruise_name as value
           from   sample sa, cast ca, station st, cruise cr
           where  sa.sample_id=?
           and    sa.cast_id=ca.cast_id
           and    ca.station_id=st.station_id
           and    st.cruise_id=cr.cruise_id
         ',
-        q'select "Sample__cruise_id" as name, st.cruise_id as value
+        q'select "cruise_id" as name, st.cruise_id as value
           from   sample sa, cast ca, station st
           where  sa.sample_id=?
           and    sa.cast_id=ca.cast_id
           and    ca.station_id=st.station_id
         ',
-        q'select "Sample__library_kit" as name, l.library_kit as value
+        q'select "library_kit" as name, l.library_kit as value
           from   sample s, library_kit l
           where  s.sample_id=?
           and    s.library_kit_id=l.library_kit_id
         ',
-        q'select "Sample__sequencing_method" as name, 
+        q'select "sequencing_method" as name, 
                  m.sequencing_method as value
           from   sample s, sequencing_method m
           where  s.sample_id=?
           and    s.sequencing_method_id=m.sequencing_method_id
         ',
-        q'select "Sample__sample_type" as name, 
+        q'select "sample_type" as name, 
                  t.sample_type as value
           from   sample s, sample_type t
           where  s.sample_id=?
           and    s.sample_type_id=t.sample_type_id
         ',
-        q'select "Sample__filter_type" as name, f.filter_type as value
+        q'select "filter_type" as name, f.filter_type as value
           from   sample s, filter_type f
           where  s.sample_id=?
           and    s.filter_type_id=f.filter_type_id
         ',
-        q'select "Sample__investigator" as name, 
+        q'select "investigator" as name, 
                  concat_ws(" ", i.first_name, i.last_name) as value
           from   sample s, investigator i
           where  s.sample_id=?
           and    s.investigator_id=i.investigator_id
         ',
-        q'select "Station__station_number" as name, 
-                 st.station_number as value
-          from   sample s, cast c, station st
-          where  s.sample_id=?
-          and    s.cast_id=c.cast_id
-          and    c.station_id=st.station_id
-        ',
-        q'select "Cast__cast_number" as name, 
-                 c.cast_number as value
+        q'select "cast_number" as name, c.cast_number as value
           from   sample s, cast c
           where  s.sample_id=?
           and    s.cast_id=c.cast_id
         ',
-        q'select "Cast__collection_date" as name, 
-                 c.collection_date as value
+        q'select "collection_date" as name, c.collection_date as value
           from   sample s, cast c
           where  s.sample_id=?
           and    s.cast_id=c.cast_id
         ',
-        q'select "Cast__collection_time" as name, 
-                 c.collection_time as value
+        q'select "collection_time" as name, c.collection_time as value
           from   sample s, cast c
           where  s.sample_id=?
           and    s.cast_id=c.cast_id
         ',
-        q'select "Cast__latitude" as name, st.latitude as value
+        q'select "latitude" as name, st.latitude as value
           from   sample sa, cast ca, station st
           where  sa.sample_id=?
           and    sa.cast_id=ca.cast_id
           and    ca.station_id=st.station_id
         ',
-        q'select "Cast__longitude" as name, st.longitude as value
+        q'select "longitude" as name, st.longitude as value
           from   sample sa, cast ca, station st
           where  sa.sample_id=?
           and    sa.cast_id=ca.cast_id
           and    ca.station_id=st.station_id
         ',
-        q'select concat_ws("__", c.category, t.type) as name, 
-                 a.value as value
+        q'select t.type as name, a.value as value
           from   sample_attr a, 
-                 sample_attr_type t, 
-                 sample_attr_type_category c
+                 sample_attr_type t
           where  a.sample_id=?
           and    a.sample_attr_type_id=t.sample_attr_type_id
-          and    t.sample_attr_type_category_id=c.sample_attr_type_category_id
         ',
-        q'select distinct concat("data__", replace(t.type, ".", "_")) as name, 
-                 "true" as value
-          from   sample_file f, sample_file_type t
-          where  f.sample_file_type_id=t.sample_file_type_id
-          and    f.sample_id=?
-        ',
+#        q'select distinct concat("data__", replace(t.type, ".", "_")) as name, 
+#                 "true" as value
+#          from   sample_file f, sample_file_type t
+#          where  f.sample_file_type_id=t.sample_file_type_id
+#          and    f.sample_id=?
+#        ',
     ],
 };
 

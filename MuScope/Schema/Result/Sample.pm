@@ -48,38 +48,6 @@ __PACKAGE__->table("sample");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 filter_type_id
-
-  data_type: 'integer'
-  default_value: 1
-  extra: {unsigned => 1}
-  is_foreign_key: 1
-  is_nullable: 0
-
-=head2 sample_type_id
-
-  data_type: 'integer'
-  default_value: 1
-  extra: {unsigned => 1}
-  is_foreign_key: 1
-  is_nullable: 0
-
-=head2 sequencing_method_id
-
-  data_type: 'integer'
-  default_value: 1
-  extra: {unsigned => 1}
-  is_foreign_key: 1
-  is_nullable: 0
-
-=head2 library_kit_id
-
-  data_type: 'integer'
-  default_value: 1
-  extra: {unsigned => 1}
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 sample_name
 
   data_type: 'varchar'
@@ -110,38 +78,6 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
   },
   "investigator_id",
-  {
-    data_type => "integer",
-    default_value => 1,
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 0,
-  },
-  "filter_type_id",
-  {
-    data_type => "integer",
-    default_value => 1,
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 0,
-  },
-  "sample_type_id",
-  {
-    data_type => "integer",
-    default_value => 1,
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 0,
-  },
-  "sequencing_method_id",
-  {
-    data_type => "integer",
-    default_value => 1,
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 0,
-  },
-  "library_kit_id",
   {
     data_type => "integer",
     default_value => 1,
@@ -205,21 +141,6 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 filter_type
-
-Type: belongs_to
-
-Related object: L<MuScope::Schema::Result::FilterType>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "filter_type",
-  "MuScope::Schema::Result::FilterType",
-  { filter_type_id => "filter_type_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
-);
-
 =head2 investigator
 
 Type: belongs_to
@@ -232,21 +153,6 @@ __PACKAGE__->belongs_to(
   "investigator",
   "MuScope::Schema::Result::Investigator",
   { investigator_id => "investigator_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
-);
-
-=head2 library_kit
-
-Type: belongs_to
-
-Related object: L<MuScope::Schema::Result::LibraryKit>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "library_kit",
-  "MuScope::Schema::Result::LibraryKit",
-  { library_kit_id => "library_kit_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
@@ -280,43 +186,14 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 sample_type
 
-Type: belongs_to
-
-Related object: L<MuScope::Schema::Result::SampleType>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "sample_type",
-  "MuScope::Schema::Result::SampleType",
-  { sample_type_id => "sample_type_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
-);
-
-=head2 sequencing_method
-
-Type: belongs_to
-
-Related object: L<MuScope::Schema::Result::SequencingMethod>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "sequencing_method",
-  "MuScope::Schema::Result::SequencingMethod",
-  { sequencing_method_id => "sequencing_method_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-25 09:56:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:txHIxFhWM20CkOf2Cl7RZA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-05-10 11:45:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6OwMuX8b4ba1jesx4SkwJg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
+# --------------------------------------------------
 sub cruise {
     my $self = shift;
     my $dbh  = $self->result_source->storage->dbh;
@@ -334,6 +211,25 @@ sub cruise {
 
     my $schema  = $self->result_source->storage->schema;
     return $schema->resultset('Cruise')->find($cruise_id);
+}
+
+# --------------------------------------------------
+sub depth {
+    my $self = shift;
+    my $dbh  = $self->result_source->storage->dbh;
+    my ($depth, $unit) = $dbh->selectrow_array(
+        q[
+            select a.value, t.unit
+            from   sample_attr a, sample_attr_type t
+            where  a.sample_id=?
+            and    a.sample_attr_type_id=t.sample_attr_type_id
+            and    t.type=?
+        ],
+        {},
+        ($self->id, 'depth')
+    );
+
+    return $depth ? "$depth $unit" : '';
 }
 
 __PACKAGE__->meta->make_immutable;
