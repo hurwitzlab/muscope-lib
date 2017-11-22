@@ -21,7 +21,10 @@ Readonly my %FILE_TYPE   => (
     'rrna.euk.gff'       => 'rRNA Eukaryote GFF',
     'rrna.mito.gff'      => 'rRNA Mitochondria GFF',
 );
-Readonly my %SKIP_EXT => map { $_, 1 } ('.md5');
+Readonly my %TYPE_BY_EXT => (
+    '.fastq' => 'Reads'
+);
+Readonly my %SKIP_EXT => map { $_, 1 } ('.md5', '.pdf', '.xls', '.xlsx');
 
 main();
 
@@ -42,28 +45,47 @@ sub main {
     my $schema = MuScope::DB->new->schema;
 
     my $i = 0;
+    FILE:
     while (my $file = <$fh>) {
         chomp($file);
         my ($name, $path, $suffix) = fileparse($file, qr/\.[^.]*/);
         next if $SKIP_EXT{ $suffix };
         my $basename = basename($file);
         my $sample   = basename($path);
-        my $type     = $FILE_TYPE{ $basename } 
-                       or die "Unknown file type: $basename\n";
+        my $type     = $FILE_TYPE{ $basename } || $TYPE_BY_EXT{ $suffix };
+
+        if (!$type && $basename =~ /\.readpool\.fastq/) {
+            $type = 'Reads';
+        }
+
+        unless ($type) {
+            print STDERR "Unknown file type: $file\n";
+            next FILE;
+        }
+
         my ($Sample) = $schema->resultset('Sample')->search({
             sample_name => $sample,
         });
 
         unless ($Sample) {
-            print STDERR "Cannot find sample '$sample'\n";
+            print STDERR "Cannot find sample '$sample' ($file)\n";
             next;
         }
 
-        printf "%3d: %s %s (%s)\n", ++$i, $basename, $sample, $type;
-        last;
+        my $Type = $schema->resultset('SampleFileType')->find_or_create({
+            type => $type
+        });
+
+        my $File = $schema->resultset('SampleFile')->find_or_create({
+            sample_id => $Sample->id,
+            file      => $file,
+            sample_file_type_id => $Type->id
+        });
+
+        printf "%3d: %s [%s] (%s)\n", ++$i, $basename, $Sample->id, $type;
     }
 
-    say "OK";
+    say "Done.";
 }
 
 # --------------------------------------------------
@@ -91,7 +113,7 @@ link-sample-files.pl - a script
 
 =head1 SYNOPSIS
 
-  link-sample-files.pl 
+  link-sample-files.pl -f irods-files.txt
 
 Options:
 

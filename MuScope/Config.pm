@@ -8,7 +8,7 @@ use Moose::Util::TypeConstraints;
 use Moose;
 use YAML qw( LoadFile );
 
-subtype 'ExistingFile'
+subtype 'NonZeroFile'
     => as 'Str' 
     => where   { -f $_ && -r _ && -s _ }
     => message { 'File must exist and be non-empty' } 
@@ -27,7 +27,7 @@ has config     => (
 
 has filename   => (
     is         => 'rw',
-    isa        => 'ExistingFile',
+    isa        => 'NonZeroFile',
     lazy_build => 1,
     trigger    => sub { 
         my $self = shift;

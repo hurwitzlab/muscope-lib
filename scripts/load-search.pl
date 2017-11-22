@@ -50,30 +50,13 @@ Readonly my %MONGO_SQL => {
           and    sa.cast_id=ca.cast_id
           and    ca.station_id=st.station_id
         ',
-        q'select "library_kit" as name, l.library_kit as value
-          from   sample s, library_kit l
-          where  s.sample_id=?
-          and    s.library_kit_id=l.library_kit_id
-        ',
-        q'select "sequencing_method" as name, 
-                 m.sequencing_method as value
-          from   sample s, sequencing_method m
-          where  s.sample_id=?
-          and    s.sequencing_method_id=m.sequencing_method_id
-        ',
-        q'select "sample_type" as name, 
-                 t.sample_type as value
-          from   sample s, sample_type t
-          where  s.sample_id=?
-          and    s.sample_type_id=t.sample_type_id
-        ',
-        q'select "filter_type" as name, f.filter_type as value
-          from   sample s, filter_type f
-          where  s.sample_id=?
-          and    s.filter_type_id=f.filter_type_id
-        ',
-        q'select "investigator" as name, 
+        q'select "investigator_name" as name, 
                  concat_ws(" ", i.first_name, i.last_name) as value
+          from   sample s, investigator i
+          where  s.sample_id=?
+          and    s.investigator_id=i.investigator_id
+        ',
+        q'select "investigator_id" as name, i.investigator_id
           from   sample s, investigator i
           where  s.sample_id=?
           and    s.investigator_id=i.investigator_id
@@ -111,12 +94,6 @@ Readonly my %MONGO_SQL => {
           where  a.sample_id=?
           and    a.sample_attr_type_id=t.sample_attr_type_id
         ',
-#        q'select distinct concat("data__", replace(t.type, ".", "_")) as name, 
-#                 "true" as value
-#          from   sample_file f, sample_file_type t
-#          where  f.sample_file_type_id=t.sample_file_type_id
-#          and    f.sample_id=?
-#        ',
     ],
 };
 
