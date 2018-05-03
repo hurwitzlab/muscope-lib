@@ -121,24 +121,24 @@ __PACKAGE__->add_unique_constraint("first_name", ["first_name", "last_name"]);
 
 =head1 RELATIONS
 
-=head2 samples
+=head2 sample_to_investigators
 
 Type: has_many
 
-Related object: L<MuScope::Schema::Result::Sample>
+Related object: L<MuScope::Schema::Result::SampleToInvestigator>
 
 =cut
 
 __PACKAGE__->has_many(
-  "samples",
-  "MuScope::Schema::Result::Sample",
+  "sample_to_investigators",
+  "MuScope::Schema::Result::SampleToInvestigator",
   { "foreign.investigator_id" => "self.investigator_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-06 13:48:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dqLquh+pGucDmPZaSkAB3w
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-11-22 10:10:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KDtglDBTVu7GB/6FRkywvA
 
 # --------------------------------------------------
 sub cruise_ids {
@@ -146,11 +146,10 @@ sub cruise_ids {
     my $dbh  = $self->result_source->storage->dbh;
     return @{ $dbh->selectcol_arrayref(
         q[
-            select distinct st.cruise_id
-            from   sample s, cast c, station st
-            where  s.investigator_id=?
-            and    s.cast_id=c.cast_id
-            and    c.station_id=st.station_id
+            select distinct s.cruise_id
+            from   sample s, sample_to_investigator s2i
+            where  s2i.investigator_id=?
+            and    s2i.sample_id=s.sample_id
         ],
         {},
         $self->id

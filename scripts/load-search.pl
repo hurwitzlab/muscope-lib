@@ -5,30 +5,27 @@ use warnings;
 use autodie;
 use feature 'say';
 use Data::Dump 'dump';
+use DateTime;
 use Getopt::Long;
 use HTTP::Request;
-use MuScope::DB;
-use MongoDB;
 use JSON::XS;
 use LWP::UserAgent;
+use MongoDB;
+use MuScope::DB;
 use Pod::Usage;
 use Readonly;
 use String::Trim qw(trim);
+use Time::ParseDate 'parsedate';
 
 Readonly my %INDEX_FLDS = (
     investigator => [qw(first_name last_name institution)],
     cruise       => [qw(cruise_name)],
-    sample       => [qw(sample_name seq_name)],
+    sample       => [qw(sample_name)],
+    sample_file  => [qw(file)],
 );
 
 Readonly my %MONGO_SQL => {
     sample => [
-        q'select "station_number" as name, station_number as value
-          from   station st, cast c, sample s
-          where  s.sample_id=?
-          and    s.cast_id=c.cast_id
-          and    c.station_id=st.station_id
-        ',
         q'select "sample_id" as name, sample_id as value
           from   sample
           where  sample_id=?
@@ -37,56 +34,29 @@ Readonly my %MONGO_SQL => {
           from   sample
           where  sample_id=?
         ',
-        q'select "cruise_name" as name, cr.cruise_name as value
-          from   sample sa, cast ca, station st, cruise cr
-          where  sa.sample_id=?
-          and    sa.cast_id=ca.cast_id
-          and    ca.station_id=st.station_id
-          and    st.cruise_id=cr.cruise_id
-        ',
-        q'select "cruise_id" as name, st.cruise_id as value
-          from   sample sa, cast ca, station st
-          where  sa.sample_id=?
-          and    sa.cast_id=ca.cast_id
-          and    ca.station_id=st.station_id
+        q'select "cruise_name" as name, c.cruise_name as value
+          from   sample s, cruise c
+          where  s.sample_id=?
+          and    s.cruise_id=c.cruise_id
         ',
         q'select "investigator_name" as name, 
                  concat_ws(" ", i.first_name, i.last_name) as value
-          from   sample s, investigator i
+          from   sample s, sample_to_investigator s2i, investigator i
           where  s.sample_id=?
-          and    s.investigator_id=i.investigator_id
+          and    s.sample_id=s2i.sample_id
+          and    s2i.investigator_id=i.investigator_id
         ',
-        q'select "investigator_id" as name, i.investigator_id
-          from   sample s, investigator i
+        q'select "collection_date" as name, collection_start as value
+          from   sample 
+          where  sample_id=?
+        ',
+        q'select "latitude" as name, s.latitude_start as value
+          from   sample s
           where  s.sample_id=?
-          and    s.investigator_id=i.investigator_id
         ',
-        q'select "cast_number" as name, c.cast_number as value
-          from   sample s, cast c
+        q'select "longitude" as name, s.longitude_start as value
+          from   sample s
           where  s.sample_id=?
-          and    s.cast_id=c.cast_id
-        ',
-        q'select "collection_date" as name, c.collection_date as value
-          from   sample s, cast c
-          where  s.sample_id=?
-          and    s.cast_id=c.cast_id
-        ',
-        q'select "collection_time" as name, c.collection_time as value
-          from   sample s, cast c
-          where  s.sample_id=?
-          and    s.cast_id=c.cast_id
-        ',
-        q'select "latitude" as name, st.latitude as value
-          from   sample sa, cast ca, station st
-          where  sa.sample_id=?
-          and    sa.cast_id=ca.cast_id
-          and    ca.station_id=st.station_id
-        ',
-        q'select "longitude" as name, st.longitude as value
-          from   sample sa, cast ca, station st
-          where  sa.sample_id=?
-          and    sa.cast_id=ca.cast_id
-          and    ca.station_id=st.station_id
         ',
         q'select t.type as name, a.value as value
           from   sample_attr a, 
@@ -203,14 +173,31 @@ sub process {
                     for my $rec (@$data) {
                         my $key = normalize($rec->{'name'}) or next;
                         my $val = trim($rec->{'value'})     or next;
-                        if ($mongo_rec{ $key }) {
-                            $mongo_rec{ $key } .= " $val";
+
+                        if ($key =~ /_date$/) {
+                            my $epoch = parsedate($val);
+                            my $dt = DateTime->from_epoch(epoch => $epoch);
+                            $mongo_rec{ $key } = $dt;
                         }
                         else {
-                            $mongo_rec{ $key } = $val;
+                            if ($mongo_rec{ $key }) {
+                                $mongo_rec{ $key } .= " $val";
+                            }
+                            else {
+                                $mongo_rec{ $key } = $val;
+                            }
                         }
                     }
                 }
+
+                $mongo_rec{'location'} = 
+                    $mongo_rec{'latitude'} =~ /\d/ &&
+                    $mongo_rec{'longitude'} =~ /\d/
+                    ? { type        => 'Point',
+                        coordinates => 
+                            [$mongo_rec{'longitude'}, $mongo_rec{'latitude'}]
+                    }
+                    : {};
 
                 $mongo_rec{'text'} = join(' ', 
                     grep { ! /^-?\d+(\.\d+)?$/ }

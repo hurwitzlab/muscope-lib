@@ -118,7 +118,7 @@ __PACKAGE__->belongs_to(
   "app",
   "MuScope::Schema::Result::App",
   { app_id => "app_id" },
-  { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 =head2 user
@@ -133,12 +133,12 @@ __PACKAGE__->belongs_to(
   "user",
   "MuScope::Schema::Result::User",
   { user_id => "user_id" },
-  { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-05-01 14:30:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BtlPlbEccmqZtQ1cVW/r/Q
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-11-28 15:05:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DuVHeOik3sfcg1N5JOMsWQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

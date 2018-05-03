@@ -112,24 +112,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 stations
+=head2 samples
 
 Type: has_many
 
-Related object: L<MuScope::Schema::Result::Station>
+Related object: L<MuScope::Schema::Result::Sample>
 
 =cut
 
 __PACKAGE__->has_many(
-  "stations",
-  "MuScope::Schema::Result::Station",
+  "samples",
+  "MuScope::Schema::Result::Sample",
   { "foreign.cruise_id" => "self.cruise_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-04-06 13:48:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XmvAQY3CggFiZF5hrQ4Z6g
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-11-22 10:10:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XoUlq9oKI0LbSLHvQbGtnA
 
 # --------------------------------------------------
 sub investigators {
@@ -138,76 +138,14 @@ sub investigators {
     $dbh->selectall_arrayref(
         q[
             select distinct i.investigator_id, i.first_name, i.last_name
-            from   investigator i, sample s, cast c, station st
-            where  st.cruise_id=?
-            and    st.station_id=c.station_id
-            and    c.cast_id=s.cast_id
-            and    s.investigator_id=i.investigator_id
+            from   investigator i, sample_to_investigator s2i, sample s
+            where  i.investigator_id=s2i.investigator_id
+            and    s2i.sample_id=s.sample_id
+            and    s.cruise_id=?
         ],
         { Columns => {} },
         $self->id
     );
-}
-
-# --------------------------------------------------
-sub cast_ids {
-    my $self     = shift;
-    my $dbh      = $self->result_source->storage->dbh;
-    return @{ $dbh->selectcol_arrayref(
-        q[
-            select c.cast_id
-            from   cast c, station s
-            where  s.cruise_id=?
-            and    s.station_id=c.station_id
-        ],
-        {},
-        $self->id
-    ) };
-}
-
-# --------------------------------------------------
-sub num_casts {
-    my $self   = shift;
-    return scalar $self->cast_ids;
-}
-
-# --------------------------------------------------
-sub casts {
-    my $self   = shift;
-    my $schema = $self->result_source->storage->schema;
-    return map { $schema->resultset('Cast')->find($_) } $self->cast_ids;
-}
-
-# --------------------------------------------------
-sub num_samples {
-    my $self = shift;
-    return scalar $self->sample_ids;
-}
-
-# --------------------------------------------------
-sub sample_ids {
-    my $self = shift;
-    my $dbh  = $self->result_source->storage->dbh;
-
-    return @{ $dbh->selectcol_arrayref(
-        q[
-            select s.sample_id
-            from   sample s, cast c, station st
-            where  st.cruise_id=?
-            and    st.station_id=c.station_id
-            and    c.cast_id=s.cast_id
-            order by s.sample_name
-        ],
-        {},
-        $self->id
-    ) };
-}
-
-# --------------------------------------------------
-sub samples {
-    my $self   = shift;
-    my $schema = $self->result_source->storage->schema;
-    return map { $schema->resultset('Sample')->find($_) } $self->sample_ids;
 }
 
 __PACKAGE__->meta->make_immutable;
