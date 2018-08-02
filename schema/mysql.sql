@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.22, for Linux (x86_64)
 --
--- Host: localhost    Database: muscope
+-- Host: localhost    Database: muscope2
 -- ------------------------------------------------------
--- Server version	5.7.17
+-- Server version	5.7.22
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,7 +28,7 @@ CREATE TABLE `app` (
   `is_active` tinyint(4) DEFAULT '1',
   `protocol` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`app_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,29 +47,9 @@ CREATE TABLE `app_run` (
   PRIMARY KEY (`app_run_id`),
   KEY `user_id` (`user_id`),
   KEY `app_id` (`app_id`),
-  CONSTRAINT `app_run_ibfk_1` FOREIGN KEY (`app_id`) REFERENCES `app` (`app_id`),
-  CONSTRAINT `app_run_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `cast`
---
-
-DROP TABLE IF EXISTS `cast`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cast` (
-  `cast_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `station_id` int(10) unsigned DEFAULT NULL,
-  `cast_number` int(10) unsigned DEFAULT NULL,
-  `collection_date` date DEFAULT NULL,
-  `collection_time` time DEFAULT NULL,
-  `collection_time_zone` varchar(20) NOT NULL DEFAULT '',
-  PRIMARY KEY (`cast_id`),
-  UNIQUE KEY `station_id` (`station_id`,`cast_number`),
-  CONSTRAINT `cast_ibfk_1` FOREIGN KEY (`station_id`) REFERENCES `station` (`station_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
+  CONSTRAINT `app_run_ibfk_1` FOREIGN KEY (`app_id`) REFERENCES `app` (`app_id`) ON DELETE CASCADE,
+  CONSTRAINT `app_run_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=289 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -84,10 +64,12 @@ CREATE TABLE `cruise` (
   `cruise_name` varchar(50) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
+  `website` varchar(100) DEFAULT '',
+  `deployment` varchar(100) DEFAULT '',
   PRIMARY KEY (`cruise_id`),
   UNIQUE KEY `cruise_name_2` (`cruise_name`),
   KEY `cruise_name` (`cruise_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,8 +141,8 @@ CREATE TABLE `login` (
   `login_date` datetime NOT NULL,
   PRIMARY KEY (`login_id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `login_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+  CONSTRAINT `login_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=238 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,7 +162,7 @@ CREATE TABLE `query_log` (
   `time` double DEFAULT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`query_log_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=97 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -192,17 +174,23 @@ DROP TABLE IF EXISTS `sample`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sample` (
   `sample_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `cast_id` int(10) unsigned DEFAULT NULL,
-  `investigator_id` int(10) unsigned NOT NULL DEFAULT '1',
+  `cruise_id` int(10) unsigned DEFAULT NULL,
   `sample_name` varchar(255) DEFAULT NULL,
-  `seq_name` varchar(255) DEFAULT NULL,
+  `station_number` int(10) unsigned NOT NULL DEFAULT '0',
+  `cast_number` int(10) unsigned NOT NULL DEFAULT '0',
+  `latitude_start` float DEFAULT NULL,
+  `latitude_stop` float DEFAULT NULL,
+  `longitude_start` float DEFAULT NULL,
+  `longitude_stop` float DEFAULT NULL,
+  `depth` int(10) unsigned DEFAULT NULL,
+  `collection_start` datetime DEFAULT NULL,
+  `collection_stop` datetime DEFAULT NULL,
+  `collection_time_zone` varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY (`sample_id`),
-  UNIQUE KEY `cast_id` (`cast_id`,`sample_name`),
+  UNIQUE KEY `cruise_id` (`cruise_id`,`sample_name`),
   KEY `sample_name` (`sample_name`),
-  KEY `investigator_id` (`investigator_id`),
-  CONSTRAINT `sample_ibfk_1` FOREIGN KEY (`cast_id`) REFERENCES `cast` (`cast_id`) ON DELETE CASCADE,
-  CONSTRAINT `sample_ibfk_6` FOREIGN KEY (`investigator_id`) REFERENCES `investigator` (`investigator_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=591 DEFAULT CHARSET=utf8;
+  CONSTRAINT `sample_ibfk_1` FOREIGN KEY (`cruise_id`) REFERENCES `cruise` (`cruise_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1598 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,7 +210,7 @@ CREATE TABLE `sample_attr` (
   KEY `sample_attr_type_id` (`sample_attr_type_id`),
   CONSTRAINT `sample_attr_ibfk_2` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`sample_id`) ON DELETE CASCADE,
   CONSTRAINT `sample_attr_ibfk_3` FOREIGN KEY (`sample_attr_type_id`) REFERENCES `sample_attr_type` (`sample_attr_type_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9759 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22934 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -243,7 +231,7 @@ CREATE TABLE `sample_attr_type` (
   UNIQUE KEY `type` (`type`),
   KEY `sample_attr_type_category_id` (`sample_attr_type_category_id`),
   CONSTRAINT `sample_attr_type_ibfk_1` FOREIGN KEY (`sample_attr_type_category_id`) REFERENCES `sample_attr_type_category` (`sample_attr_type_category_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -260,7 +248,7 @@ CREATE TABLE `sample_attr_type_alias` (
   PRIMARY KEY (`sample_attr_type_alias_id`),
   UNIQUE KEY `sample_attr_type_id` (`sample_attr_type_id`,`alias`),
   CONSTRAINT `sample_attr_type_alias_ibfk_1` FOREIGN KEY (`sample_attr_type_id`) REFERENCES `sample_attr_type` (`sample_attr_type_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,7 +288,7 @@ CREATE TABLE `sample_file` (
   KEY `sample_file_type_id` (`sample_file_type_id`),
   CONSTRAINT `sample_file_ibfk_4` FOREIGN KEY (`sample_file_type_id`) REFERENCES `sample_file_type` (`sample_file_type_id`) ON DELETE CASCADE,
   CONSTRAINT `sample_file_ibfk_5` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`sample_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1790 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6076 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -315,7 +303,26 @@ CREATE TABLE `sample_file_type` (
   `type` varchar(255) NOT NULL,
   PRIMARY KEY (`sample_file_type_id`),
   UNIQUE KEY `type` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sample_to_investigator`
+--
+
+DROP TABLE IF EXISTS `sample_to_investigator`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sample_to_investigator` (
+  `sample_to_investigator_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `sample_id` int(10) unsigned NOT NULL,
+  `investigator_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`sample_to_investigator_id`),
+  UNIQUE KEY `sample_id` (`sample_id`,`investigator_id`),
+  KEY `investigator_id` (`investigator_id`),
+  CONSTRAINT `sample_to_investigator_ibfk_1` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`sample_id`) ON DELETE CASCADE,
+  CONSTRAINT `sample_to_investigator_ibfk_2` FOREIGN KEY (`investigator_id`) REFERENCES `investigator` (`investigator_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1415 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -332,26 +339,7 @@ CREATE TABLE `search` (
   `search_text` longtext,
   PRIMARY KEY (`search_id`),
   FULLTEXT KEY `search_text` (`search_text`)
-) ENGINE=MyISAM AUTO_INCREMENT=7270 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `station`
---
-
-DROP TABLE IF EXISTS `station`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `station` (
-  `station_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `cruise_id` int(10) unsigned NOT NULL,
-  `station_number` int(10) unsigned DEFAULT NULL,
-  `latitude` float DEFAULT NULL,
-  `longitude` float DEFAULT NULL,
-  PRIMARY KEY (`station_id`),
-  UNIQUE KEY `cruise_id` (`cruise_id`,`station_number`),
-  CONSTRAINT `station_ibfk_1` FOREIGN KEY (`cruise_id`) REFERENCES `cruise` (`cruise_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=43523 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -366,7 +354,7 @@ CREATE TABLE `user` (
   `user_name` varchar(50) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `user_name` (`user_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -378,4 +366,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-11  9:43:08
+-- Dump completed on 2018-08-02 13:53:32

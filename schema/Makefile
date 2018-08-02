@@ -12,7 +12,7 @@ db: recreate ctd_type investigator
 # 	mysql muscope < create.sql
 
 dump:
-	mysqldump --no-data muscope > mysql.sql
+	mysqldump --no-data muscope2 > mysql.sql
 
 image:
 	sqlt-graph --color -o muscope.png -f MySQL mysql.sql

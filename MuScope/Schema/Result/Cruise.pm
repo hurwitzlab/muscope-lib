@@ -51,6 +51,20 @@ __PACKAGE__->table("cruise");
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
+=head2 website
+
+  data_type: 'varchar'
+  default_value: (empty string)
+  is_nullable: 1
+  size: 100
+
+=head2 deployment
+
+  data_type: 'varchar'
+  default_value: (empty string)
+  is_nullable: 1
+  size: 100
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -67,6 +81,10 @@ __PACKAGE__->add_columns(
   { data_type => "date", datetime_undef_if_invalid => 1, is_nullable => 1 },
   "end_date",
   { data_type => "date", datetime_undef_if_invalid => 1, is_nullable => 1 },
+  "website",
+  { data_type => "varchar", default_value => "", is_nullable => 1, size => 100 },
+  "deployment",
+  { data_type => "varchar", default_value => "", is_nullable => 1, size => 100 },
 );
 
 =head1 PRIMARY KEY
@@ -128,8 +146,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-11-22 10:10:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XoUlq9oKI0LbSLHvQbGtnA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2018-05-15 10:20:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qMIrcWdm3gf5hbfMXlONTQ
 
 # --------------------------------------------------
 sub investigators {

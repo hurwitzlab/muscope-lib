@@ -34,10 +34,19 @@ Readonly my %MONGO_SQL => {
           from   sample
           where  sample_id=?
         ',
+        q'select "cruise_id" as name, cruise_id as value
+          from   sample
+          where  sample_id=?
+        ',
         q'select "cruise_name" as name, c.cruise_name as value
           from   sample s, cruise c
           where  s.sample_id=?
           and    s.cruise_id=c.cruise_id
+        ',
+        q'select "investigator_id" as name, s2i.investigator_id as value
+          from   sample s, sample_to_investigator s2i
+          where  s.sample_id=?
+          and    s.sample_id=s2i.sample_id
         ',
         q'select "investigator_name" as name, 
                  concat_ws(" ", i.first_name, i.last_name) as value
